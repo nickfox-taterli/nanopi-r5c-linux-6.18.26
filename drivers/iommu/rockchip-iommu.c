@@ -1126,6 +1126,7 @@ static struct iommu_device *rk_iommu_probe_device(struct device *dev)
 {
 	struct rk_iommudata *data;
 	struct rk_iommu *iommu;
+	u32 flags = DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME;
 
 	data = dev_iommu_priv_get(dev);
 	if (!data)
@@ -1133,8 +1134,10 @@ static struct iommu_device *rk_iommu_probe_device(struct device *dev)
 
 	iommu = rk_iommu_from_dev(dev);
 
-	data->link = device_link_add(dev, iommu->dev,
-				     DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
+	if (device_property_read_bool(iommu->dev, "rockchip,disable-runtime-link"))
+		flags &= ~DL_FLAG_PM_RUNTIME;
+
+	data->link = device_link_add(dev, iommu->dev, flags);
 
 	return &iommu->iommu;
 }
@@ -1349,7 +1352,11 @@ static struct rk_iommu_ops iommu_data_ops_v2 = {
 	.mk_dtentries = &rk_mk_dte_v2,
 	.mk_ptentries = &rk_mk_pte_v2,
 	.dma_bit_mask = DMA_BIT_MASK(40),
-	.gfp_flags = 0,
+	/*
+	 * RK3568 IOMMU v2 supports 40-bit DMA addresses, but some masters
+	 * require the IOMMU page tables themselves to be reachable below 4G.
+	 */
+	.gfp_flags = GFP_DMA32,
 };
 
 static const struct of_device_id rk_iommu_dt_ids[] = {
