@@ -6,10 +6,28 @@
 #ifndef __SOC_ROCKCHIP_PM_DOMAINS_H__
 #define __SOC_ROCKCHIP_PM_DOMAINS_H__
 
+struct device;
+
 #ifdef CONFIG_ROCKCHIP_PM_DOMAINS
 
 int rockchip_pmu_block(void);
 void rockchip_pmu_unblock(void);
+static inline int rockchip_pmu_idle_request(struct device *dev, bool idle)
+{
+	return 0;
+}
+static inline bool rockchip_pmu_pd_is_on(struct device *dev)
+{
+	return true;
+}
+static inline int rockchip_pmu_pd_on(struct device *dev)
+{
+	return 0;
+}
+static inline int rockchip_pmu_pd_off(struct device *dev)
+{
+	return 0;
+}
 
 #else /* CONFIG_ROCKCHIP_PM_DOMAINS */
 
@@ -19,6 +37,22 @@ static inline int rockchip_pmu_block(void)
 }
 
 static inline void rockchip_pmu_unblock(void) { }
+static inline int rockchip_pmu_idle_request(struct device *dev, bool idle)
+{
+	return 0;
+}
+static inline bool rockchip_pmu_pd_is_on(struct device *dev)
+{
+	return true;
+}
+static inline int rockchip_pmu_pd_on(struct device *dev)
+{
+	return 0;
+}
+static inline int rockchip_pmu_pd_off(struct device *dev)
+{
+	return 0;
+}
 
 #endif /* CONFIG_ROCKCHIP_PM_DOMAINS */
 
