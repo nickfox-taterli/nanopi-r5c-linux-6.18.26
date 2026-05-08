@@ -567,6 +567,18 @@
 		};
 	};
 
+	sram: sram@fdcc0000 {
+		compatible = "mmio-sram";
+		reg = <0x0 0xfdcc0000 0x0 0xb000>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges = <0x0 0x0 0xfdcc0000 0xb000>;
+
+		rkvdec_sram: rkvdec-sram@0 {
+			reg = <0x0 0xb000>;
+		};
+	};
+
 	rknpu: npu@fde40000 {
 		compatible = "rockchip,rk3568-rknpu", "rockchip,rknpu";
 		reg = <0x0 0xfde40000 0x0 0xb000>;
@@ -770,9 +782,10 @@
 		rockchip,srv = <&mpp_srv>;
 		rockchip,taskqueue-node = <4>;
 		rockchip,resetgroup-node = <4>;
+		rockchip,sram = <&rkvdec_sram>;
 		rockchip,rcb-iova = <0x10000000 65536>;
 		rockchip,rcb-min-width = <512>;
-		rockchip,task-capacity = <16>;
+		rockchip,task-capacity = <1>;
 		status = "disabled";
 	};
 

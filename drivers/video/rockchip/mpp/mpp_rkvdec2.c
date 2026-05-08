@@ -1822,8 +1822,10 @@ static int rkvdec2_alloc_rcbbuf(struct platform_device *pdev, struct rkvdec2_dev
 	/* get sram device node */
 	sram_np = of_parse_phandle(dev->of_node, "rockchip,sram", 0);
 	if (!sram_np) {
-		dev_err(dev, "could not find phandle sram\n");
-		return -ENODEV;
+		dev_info(dev, "could not find phandle sram, use system memory for rcb\n");
+		sram_start = 0;
+		sram_size = 0;
+		goto alloc_dma;
 	}
 	/* get sram start and size */
 	ret = of_address_to_resource(sram_np, 0, &sram_res);
@@ -1849,6 +1851,7 @@ static int rkvdec2_alloc_rcbbuf(struct platform_device *pdev, struct rkvdec2_dev
 		dev_err(dev, "sram iommu_map error.\n");
 		return ret;
 	}
+alloc_dma:
 	/* alloc dma for the remaining buffer, sram + dma */
 	if (sram_size < rcb_size) {
 		struct page *page;
