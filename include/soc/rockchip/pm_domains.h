@@ -28,6 +28,14 @@ static inline int rockchip_pmu_pd_off(struct device *dev)
 {
 	return 0;
 }
+static inline int rockchip_save_qos(struct device *dev)
+{
+	return 0;
+}
+static inline int rockchip_restore_qos(struct device *dev)
+{
+	return 0;
+}
 
 #else /* CONFIG_ROCKCHIP_PM_DOMAINS */
 
@@ -50,6 +58,14 @@ static inline int rockchip_pmu_pd_on(struct device *dev)
 	return 0;
 }
 static inline int rockchip_pmu_pd_off(struct device *dev)
+{
+	return 0;
+}
+static inline int rockchip_save_qos(struct device *dev)
+{
+	return 0;
+}
+static inline int rockchip_restore_qos(struct device *dev)
 {
 	return 0;
 }

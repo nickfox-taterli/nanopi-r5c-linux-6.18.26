@@ -651,9 +651,14 @@ int mpp_iommu_dev_activate(struct mpp_iommu_info *info, struct mpp_dev *dev)
 		ret = -EINVAL;
 	} else {
 		info->dev_active = dev;
-		/* switch domain pagefault handler and arg depending on device */
-		iommu_set_fault_handler(info->domain, dev->fault_handler ?
-					dev->fault_handler : mpp_iommu_handle, dev);
+		/*
+		 * 6.18 only allows iommu_set_fault_handler() before a DMA
+		 * cookie is installed. MPP runs on the default DMA domain, so
+		 * keep the kernel's domain fault handling there.
+		 */
+		if (info->domain->cookie_type == IOMMU_COOKIE_NONE)
+			iommu_set_fault_handler(info->domain, dev->fault_handler ?
+						dev->fault_handler : mpp_iommu_handle, dev);
 
 		dev_dbg(info->dev, "activate -> %p %s\n", dev, dev_name(dev->dev));
 	}

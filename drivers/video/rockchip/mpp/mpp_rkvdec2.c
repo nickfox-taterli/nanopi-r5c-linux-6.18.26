@@ -2086,7 +2086,8 @@ static int rkvdec2_free_rcbbuf(struct platform_device *pdev, struct rkvdec2_dev 
 
 	if (dec->rcb_page) {
 		size_t page_size = PAGE_ALIGN(dec->rcb_size - dec->sram_size);
-		int order = min(get_order(page_size), MAX_ORDER);
+		unsigned int order = min_t(unsigned int, get_order(page_size),
+					   MAX_PAGE_ORDER);
 
 		__free_pages(dec->rcb_page, order);
 	}
@@ -2098,7 +2099,7 @@ static int rkvdec2_free_rcbbuf(struct platform_device *pdev, struct rkvdec2_dev 
 	return 0;
 }
 
-static int rkvdec2_remove(struct platform_device *pdev)
+static void rkvdec2_remove(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 
@@ -2119,8 +2120,6 @@ static int rkvdec2_remove(struct platform_device *pdev)
 		rkvdec2_procfs_remove(mpp);
 		rkvdec2_link_remove(mpp, dec->link_dec);
 	}
-
-	return 0;
 }
 
 static void rkvdec2_shutdown(struct platform_device *pdev)
